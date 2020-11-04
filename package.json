@@ -1,0 +1,11 @@
+{
+  "name": "1uphealth",
+  "version": "1.0.0",
+  "description": "Web application to access test patient data using 1upHealth API",
+  "main": "app.js",
+  "scripts": {
+    "test": "mocha test"
+  },
+  "author": "Ryan Kennelly",
+  "license": "MIT"
+}
