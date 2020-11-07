@@ -42,7 +42,30 @@ function getAuthCodeForExistingUser(userId) {
   })
 }
 
+// trade an auth code for an access and refresh token to access the 1up API
+function getAccessToken(code) {
+  return axios({
+    method: 'POST',
+    validateStatus: () => true,
+    url: 'https://api.1up.health/fhir/oauth2/token',
+    data: {
+      code: code,
+      grant_type: 'authorization_code',
+      client_id: process.env.CLIENT_ID,
+      client_secret: process.env.CLIENT_SECRET,
+    }
+  })
+  .then((res) => {
+    if (res.status === 200) {
+      return res.data
+    } else {
+      throw new Error(`getAccessToken failed with status code ${res.status} and error: '${res.data.error}'`)
+    }
+  })
+}
+
 module.exports = {
   createUser,
+  getAccessToken,
   getAuthCodeForExistingUser,
 }
