@@ -64,8 +64,31 @@ function getAccessToken(code) {
   })
 }
 
+// get a new access token using the refresh token
+function refreshAccessToken(refreshToken) {
+  return axios({
+    method: 'POST',
+    validateStatus: () => true,
+    url: 'https://api.1up.health/fhir/oauth2/token',
+    data: {
+      refresh_token: refreshToken,
+      grant_type: 'refresh_token',
+      client_id: process.env.CLIENT_ID,
+      client_secret: process.env.CLIENT_SECRET,
+    }
+  })
+  .then((res) => {
+    if (res.status === 200) {
+      return res.data
+    } else {
+      throw new Error(`refreshAccessToken failed with status code ${res.status} and error ${res.data.error}`)
+    }
+  })
+}
+
 module.exports = {
   createUser,
   getAccessToken,
   getAuthCodeForExistingUser,
+  refreshAccessToken,
 }
