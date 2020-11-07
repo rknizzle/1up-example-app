@@ -86,9 +86,29 @@ function refreshAccessToken(refreshToken) {
   })
 }
 
+// get the ID of the current patient
+function getPatientId(accessToken) {
+  return axios({
+    method: 'GET',
+    validateStatus: () => true,
+    url: 'https://api.1up.health/fhir/dstu2/patient',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    }
+  })
+  .then((res) => {
+    if (res.status === 200) {
+      return res.data
+    } else {
+      throw new Error(`getPatientId failed with status code ${res.status} and error ${res.data.error}`)
+    }
+  })
+}
+
 module.exports = {
   createUser,
   getAccessToken,
   getAuthCodeForExistingUser,
+  getPatientId,
   refreshAccessToken,
 }
