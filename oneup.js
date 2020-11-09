@@ -107,7 +107,7 @@ function refreshAccessToken(refreshToken) {
 }
 
 // get the ID of the current patient
-function getPatientId(accessToken) {
+function getPatient(accessToken) {
   return axios({
     method: 'GET',
     validateStatus: () => true,
@@ -120,7 +120,7 @@ function getPatientId(accessToken) {
     if (res.status === 200) {
       return res.data
     } else {
-      throw new Error(`getPatientId failed with status code ${res.status} and error ${res.data.error}`)
+      throw new Error(`getPatient failed with status code ${res.status} and error ${res.data.error}`)
     }
   })
 }
@@ -179,6 +179,6 @@ module.exports = {
   getAccessToken,
   getAllFhirData,
   getAuthCodeForExistingUser,
-  getPatientId,
+  getPatient,
   refreshAccessToken,
 }
