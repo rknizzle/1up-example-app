@@ -1,5 +1,25 @@
 const axios = require('axios')
 
+// tries to create new user and if the user already exists it will get an auth code for the existing
+// user
+async function createOrGetUser(username) {
+  let accessCode
+  let result
+
+  try {
+    result = await createUser(username)
+    accessCode = result.code
+  } catch(err) {
+    if (err.message.includes('user already exists')) {
+      result = await getAuthCodeForExistingUser(username)
+      accessCode = result.code
+    } else {
+      throw err
+    }
+  }
+  return accessCode
+}
+
 // create a new user in the 1up platform
 function createUser(username) {
   return axios({
@@ -7,7 +27,7 @@ function createUser(username) {
     validateStatus: () => true,
     url: 'https://api.1up.health/user-management/v1/user',
     data: {
-      app_user_id: user,
+      app_user_id: username,
       client_id: process.env.CLIENT_ID,
       client_secret: process.env.CLIENT_SECRET,
     }
@@ -154,6 +174,7 @@ async function getAllFhirData(accessToken, fhirVersion, patientId) {
 }
 
 module.exports = {
+  createOrGetUser,
   createUser,
   getAccessToken,
   getAllFhirData,
