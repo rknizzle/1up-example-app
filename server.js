@@ -7,27 +7,43 @@ const cookieParser = require('cookie-parser');
 app.set('view engine', 'ejs')
 app.use(cookieParser())
 app.use(session({ secret: 'secret' }))
+app.use(express.urlencoded({
+  extended: true
+}))
 
 const oneup = require('./oneup.js')
 
-// TODO: login
-
 app.get('/', async (req, res) => {
-  // For now just immediately pull up the quick connect page upon loading the website as an example
-  // 1up user that has previously been created.
-  let result = await oneup.getAuthCodeForExistingUser('example1')
-  accessCode = result.code
+  res.render('login.ejs')
+})
+
+app.post('/login', async (req, res) => {
+  let accessCode = await oneup.createOrGetUser(req.body.username)
   result = await oneup.getAccessToken(accessCode)
 
   // store the access token in a session to access patient data later
   req.session.oneUpAccessToken = result.access_token
 
+  // Check if this user is already signed into cerner
+  let patient = await oneup.getPatient(req.session.oneUpAccessToken)
+
   let cernerSystemId = 4707
-  res.redirect(`https://quick.1up.health/connect/${cernerSystemId}?access_token=${result.access_token}`)
+  if (patient.entry.length < 1) {
+    res.redirect(`https://quick.1up.health/connect/${cernerSystemId}?access_token=${result.access_token}`)
+  } else {
+    req.session.patientId = patient.entry[0].resource.id
+    res.redirect('/dashboard')
+  }
 })
 
 app.get('/callback', async (req, res) => {
-  const data = await oneup.getAllFhirData(req.session.oneUpAccessToken, 'dstu2', 'e467f71f186f')
+  let patient = await oneup.getPatient(req.session.oneUpAccessToken)
+  req.session.patientId = patient.entry[0].resource.id
+  res.redirect('/dashboard')
+})
+
+app.get('/dashboard', async (req, res) => {
+  const data = await oneup.getAllFhirData(req.session.oneUpAccessToken, 'dstu2', req.session.patientId)
   res.render('dashboard.ejs', { data })
 })
 
