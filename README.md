@@ -1,6 +1,9 @@
 # 1upHealth Web Application
 
 ## Getting Started
+To try out this demo without having to run it yourself just visit [http://54.144.43.27](http://54.144.43.27) where the app is running on an AWS EC2 instance!
+
+## Run it yourself
 First, create an application from the 1Up Health website [here](https://1up.health/devconsole). 
 Make sure you specify http://localhost:8080/callback when creating the application and note down the
 client ID and secret when you are done.
