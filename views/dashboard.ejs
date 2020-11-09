@@ -1,0 +1,11 @@
+<html>
+  <h1>Patient</h1>
+  <table>
+  <% for(var i=0; i < data.length; i++) { %>
+     <tr>
+       <td><%= data[i].resource.resourceType %></td>
+       <td><%- data[i].resource.text.div %></td>
+     </tr>
+  <% } %>
+  </table>
+</html>
